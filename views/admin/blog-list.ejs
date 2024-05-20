@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head") %>
+  </head>
+  <body>
+    <%- include("../partials/nav") %>
+
+    <div class="container mt-3">
+      <div class="row">
+        <div class="col-md-12 mt-3">
+          <% if (action != "undefined" && action == "create") { %>
+          <div class="alert alert-success">Blog has been Added</div>
+          <% } %> <% if (action != "undefined" && action == "edit") { %>
+          <div class="alert alert-success">
+            #<%= blogid %> Blog has been updated
+          </div>
+          <% } %> <% if (action != "undefined" && action == "delete") { %>
+          <div class="alert alert-danger">Blog has been deleted</div>
+          <% } %>
+          <table class="table table-border table-striped">
+            <thead>
+              <tr>
+                <th style="width: 50px">id</th>
+                <th style="width: 150px">picture</th>
+                <th>title</th>
+                <th style="width: 130px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% blogs.forEach(blog => { %>
+              <tr>
+                <td><%= blog.blogid %></td>
+                <td>
+                  <img
+                    src="/static/images/<%= blog.picture %>"
+                    class="img-fluid"
+                    alt=""
+                  />
+                </td>
+                <td><%= blog.title %></td>
+                <td>
+                  <a
+                    href="/admin/blogs/<%= blog.blogid %>"
+                    class="btn btn-sm btn-primary"
+                    >Edit</a
+                  >
+                  <a
+                    class="btn btn-sm btn-danger"
+                    href="/admin/blog/delete/<%= blog.blogid %>"
+                    >Delete</a
+                  >
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
