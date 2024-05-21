@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const fs = require("fs"); // File system nodeJs module udur. Dosyalarla calisirken eklenir
 
 const db = require("../data/db"); // db.js modülünü import ediyoruz
 db.query("SELECT * FROM blog", function (err, res) {
@@ -73,17 +74,22 @@ router.get("/blogs/:blogid", async (req, res) => {
   }
 });
 // Blog edit işlemini handle eden POST route
-router.post("/blogs/:blogid", async (req, res) => {
+router.post("/blogs/:blogid", imageUpload.upload.single("resim"), async (req, res) => {
   try {
     const {
       blogid: bodyBlogId,
       baslik,
+      subtitle,
       aciklama,
-      resim,
       kategori,
       anasayfa,
       onay,
     } = req.body;
+
+    // Altta degistirecegimiz icin let yaptik. Hidden dan gelen 
+    // eski resimin adi bir degisiklik yapimadigi durumda tekrar veritabanina yollanir.
+    let { resim } = req.body;
+
     const homepage = anasayfa ? true : false;
     const approved = onay ? true : false;
     const paramBlogId = req.params.blogid;
@@ -92,10 +98,16 @@ router.post("/blogs/:blogid", async (req, res) => {
     if (paramBlogId !== bodyBlogId) {
       return res.status(400).send("Blog ID'si eşleşmiyor");
     }
+    if (req.file) {
+      resim = req.file.filename;
+      fs.unlink("./public/images/" + req.body.resim, err => {
+        console.log("Old picture couldn't delete ", err);
+      })
+    }
 
     await db.query(
-      "UPDATE blog SET title=$1, description=$2, picture=$3, category_id=$4, homepage=$5, approval=$6 WHERE blogid=$7 RETURNING *",
-      [baslik, aciklama, resim, kategori, homepage, approved, paramBlogId]
+      "UPDATE blog SET title=$1, subtitle=$2, description=$3, picture=$4, category_id=$5, homepage=$6, approval=$7 WHERE blogid=$8 RETURNING *",
+      [baslik, subtitle, aciklama, resim, kategori, homepage, approved, paramBlogId]
     );
 
     res.redirect("/admin/blogs?action=edit&blogid=" + paramBlogId); // Başarılı olursa blog listesine yönlendirme
@@ -125,7 +137,7 @@ router.post("/blog/create", imageUpload.upload.single("resim"), async (req, res)
   //console.log(req.body); // Form verilerini konsola yazdırır
   // Form verilerini veritabanına kaydetme
   try {
-    const { baslik, aciklama, kategori, anasayfa, onay } = req.body;
+    const { baslik, subtitle, aciklama, kategori, anasayfa, onay } = req.body;
     const resim = req.file.filename;
     const homepage = anasayfa ? true : false;
     const approved = onay ? true : false;
@@ -138,8 +150,8 @@ router.post("/blog/create", imageUpload.upload.single("resim"), async (req, res)
 
     const result = await db.query(
 
-      "INSERT INTO blog (title, description, picture, category_id, homepage, approval) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-      [baslik, aciklama, resim, kategori, homepage, approved]
+      "INSERT INTO blog (title, subtitle, description, picture, category_id, homepage, approval) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      [baslik, subtitle, aciklama, resim, kategori, homepage, approved]
     );
 
     console.log(result.rows[0]);
@@ -152,10 +164,10 @@ router.post("/blog/create", imageUpload.upload.single("resim"), async (req, res)
 // ============================================
 // MAIN Admin Blogs route
 // ============================================
-router.use("/blogs", async (req, res) => {
+router.get("/blogs", async (req, res) => {
   try {
     const result_blogs = await db.query(
-      "SELECT blogid, title, picture FROM blog"
+      "SELECT blogid, title, subtitle, picture FROM blog"
     );
 
     res.render("admin/blog-list", {

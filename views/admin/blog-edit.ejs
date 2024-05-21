@@ -9,8 +9,10 @@
     <div class="container mt-3">
       <div class="row">
         <div class="col-md-12 mt-3">
-          <form method="post">
+          <form method="post" enctype="multipart/form-data">
             <input type="hidden" name="blogid" value="<%= blog.blogid %>" />
+            <input type="hidden" name="resim" value="<%= blog.picture %>" />
+
             <div class="row mb-3">
               <label for="baslik" class="col-sm-2 col-form-label">Başlık</label>
               <div class="col-sm-8">
@@ -24,11 +26,26 @@
               </div>
             </div>
             <div class="row mb-3">
-              <label for="aciklama" class="col-sm-2 col-form-label"
-                >Açıklama</label
+              <label for="subtitle" class="col-sm-2 col-form-label"
+                >Subtitle</label
               >
               <div class="col-sm-8">
-                <textarea name="aciklama" class="form-control" rows="10">
+                <textarea name="subtitle" class="form-control" rows="5">
+<%= blog.subtitle%></textarea
+                >
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="aciklama" class="col-sm-2 col-form-label"
+                >Details</label
+              >
+              <div class="col-sm-8">
+                <textarea
+                  id="editor"
+                  name="aciklama"
+                  class="form-control"
+                  rows="10"
+                >
 <%= blog.description  %></textarea
                 >
               </div>
@@ -36,12 +53,17 @@
             <div class="row mb-3">
               <label for="resim" class="col-sm-2 col-form-label">Resim</label>
               <div class="col-sm-8">
+                <img
+                  src="/static/images/<%= blog.picture %>"
+                  alt=""
+                  width="120px"
+                  class="mb-2"
+                />
                 <input
-                  type="text"
+                  type="file"
                   class="form-control"
                   id="resim"
                   name="resim"
-                  value="<%= blog.picture%>"
                 />
               </div>
             </div>
@@ -93,5 +115,10 @@
         </div>
       </div>
     </div>
+    <script>
+      ClassicEditor.create(document.querySelector("#editor")).catch((error) => {
+        console.error(error);
+      });
+    </script>
   </body>
 </html>

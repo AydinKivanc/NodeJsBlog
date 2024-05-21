@@ -11,7 +11,7 @@
         <div class="col-md-12 mt-3">
           <form method="post" enctype="multipart/form-data">
             <div class="row mb-3">
-              <label for="baslik" class="col-sm-2 col-form-label">Başlık</label>
+              <label for="baslik" class="col-sm-2 col-form-label">Title</label>
               <div class="col-sm-8">
                 <input
                   type="text"
@@ -22,11 +22,24 @@
               </div>
             </div>
             <div class="row mb-3">
-              <label for="aciklama" class="col-sm-2 col-form-label"
-                >Açıklama</label
+              <label for="subtitle" class="col-sm-2 col-form-label"
+                >Subtitle</label
               >
               <div class="col-sm-8">
                 <textarea
+                  name="subtitle"
+                  class="form-control"
+                  rows="5"
+                ></textarea>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="aciklama" class="col-sm-2 col-form-label"
+                >Details</label
+              >
+              <div class="col-sm-8">
+                <textarea
+                  id="editor"
                   name="aciklama"
                   class="form-control"
                   rows="10"
@@ -96,5 +109,10 @@
         </div>
       </div>
     </div>
+    <script>
+      ClassicEditor.create(document.querySelector("#editor")).catch((error) => {
+        console.error(error);
+      });
+    </script>
   </body>
 </html>

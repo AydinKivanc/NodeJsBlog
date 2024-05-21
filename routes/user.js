@@ -46,6 +46,7 @@ router.use("/blogs/:blogid", async (req, res) => {
     //console.log(result_blog.rows[0]);
     if (result_blog.rows.length > 0) {
       return res.render("users/blog-details", {
+        title: result_blog.rows[0].title,
         blog: result_blog.rows[0],
       });
     } else {
