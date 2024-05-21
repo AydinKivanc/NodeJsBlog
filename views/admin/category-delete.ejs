@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head") %>
+    <style>
+      .btn-sm-equal {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border-radius: 0.2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include("../partials/nav") %>
+
+    <div class="container mt-3">
+      <div class="row">
+        <% if (blogs.length < 1) { %>
+          <div class="col-md-12 mt-3">
+            <div class="alert alert-secondary">
+              <p class="mb-3">
+                <b><%= category.category_name %></b> <br />
+                Are you sure you want to delete the category?
+              </p>
+              <form method="post">
+                <input type="hidden" name="categoryid" value="<%= category.id %>" />
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a href="/admin/categories" class="btn btn-primary">Cancel</a>
+              </form>
+            </div>
+          </div>
+        <% } else { %>
+          <div class="col-md-12 mt-3">
+            <p class="text text-danger">
+              You can move or delete the following linked blog pages to different
+              categories. If there is no associated blog left, you will be able to
+              delete the category of blogs permanently.
+            </p>
+            <h4><%= category.category_name %> Blogs</h4>
+            <table class="table table-border table-striped">
+              <thead>
+                <tr>
+                  <th style="width: 50px">ID</th>
+                  <th>Title</th>
+                  <th style="width: 350px" >Transfer</th>
+                  <th style="width: 50px"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% blogs.forEach(blog => { %>
+                  <tr >
+                    <td><%= blog.blogid %></td>
+                    <td ><%= blog.title %></td>
+                    <td >
+                      <form action="/admin/blog/update-category/<%= blog.blogid %>" method="post" class="d-flex align-items-center">
+                        <select name="kategori" class="form-select me-2">
+                          <option value="-1" selected>Seçiniz</option>
+                          <% categories.forEach(category => { %>
+                            <option value="<%= category.id %>" <%= category.id === blog.category_id ? "selected" : "" %>>
+                              <%= category.category_name %>
+                            </option>
+                          <% }) %>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary btn-sm-equal" ">Apply</button>
+                      </form>
+                    </td>
+                    <td>
+                      <a class="btn btn-sm btn-danger btn-sm-equal" style="margin-top: 2px;" href="/admin/blog/delete/<%= blog.blogid %>">Delete</a>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>
